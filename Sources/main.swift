@@ -82,6 +82,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if let button = statusItem.button {
             button.image = NSImage(systemSymbolName: symbol, accessibilityDescription: label)
             button.image?.isTemplate = true
+            // Template images follow the menu bar's own color; tinting the active state
+            // makes the difference readable at a glance, not just filled vs. outlined.
+            button.contentTintColor = on ? .controlAccentColor : nil
             button.toolTip = "KeepAwake – \(label)"
         }
         toggleItem.state = on ? .on : .off
