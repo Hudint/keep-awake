@@ -80,12 +80,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let label = on ? "Awake – display stays on" : "Off – display may sleep"
 
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: symbol, accessibilityDescription: label)
-            button.image?.isTemplate = true
+            let image = NSImage(systemSymbolName: symbol, accessibilityDescription: label)
+
             // Filled vs. outlined is hard to spot at menu bar size, so the active state is
-            // also tinted. Deliberately a fixed color rather than the accent color, which
-            // is invisible here when the user runs a graphite/black accent.
-            button.contentTintColor = on ? .systemOrange : nil
+            // colored too. The menu bar draws template images in its own color and ignores
+            // contentTintColor, so the color has to be baked into the symbol itself — and it
+            // is a fixed color, not the accent color, which is invisible on a black accent.
+            if on {
+                let colored = image?.withSymbolConfiguration(
+                    NSImage.SymbolConfiguration(paletteColors: [.systemOrange])
+                )
+                colored?.isTemplate = false
+                button.image = colored
+            } else {
+                image?.isTemplate = true
+                button.image = image
+            }
+
             button.toolTip = "KeepAwake – \(label)"
         }
         toggleItem.state = on ? .on : .off
